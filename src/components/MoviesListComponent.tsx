@@ -18,21 +18,23 @@ export const MoviesListComponent = observer(() => {
     const sortedMovies = sortMovies(searchMode ? searchResults : movies)
 
     return <>
-        { sortedMovies.length > 0 && (
-            <table id={'directory-table'}>
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Ratings</th>
-                    <th>Duration</th>
-                </tr>
-                </thead>
-                <tbody>
-                { sortedMovies.map((movie) => <MovieRow movie={movie} key={movie.name} />) }
-                </tbody>
-            </table>
-        ) }
+        <table id={'directory-table'}>
+            { sortedMovies.length > 0 && (
+                <>
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Ratings</th>
+                        <th>Duration</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    { sortedMovies.map((movie) => <MovieRow movie={movie} key={movie.name} />) }
+                    </tbody>
+                </>
+            ) }
+        </table>
 
-        { searchMode && !searchResults.length && <div id={'no-result'}>No Results Found</div> }
+        { !searchResults.length && <div id={'no-result'}>No Results Found</div> }
     </>
 })

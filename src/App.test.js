@@ -70,6 +70,8 @@ it('should show no results message', () => {
 
 describe('adding a new row', () => {
   it('should add a row with valid data', () => {
+    jest.useFakeTimers();
+
     const dom = render(<App />);
 
     const tableRowsAtStart = tableRowsIn(dom);
@@ -77,9 +79,12 @@ describe('adding a new row', () => {
     setMovieRatingsIn(dom, '5');
     setMovieDurationIn(dom, '3h');
     submitFormIn(dom);
-    const tableRowsAtEnd = tableRowsIn(dom);
 
-    expect(tableRowsAtEnd.length).toEqual(tableRowsAtStart.length + 1);
+    setTimeout(() => {
+        const tableRowsAtEnd = tableRowsIn(dom);
+
+        expect(tableRowsAtEnd.length).toEqual(tableRowsAtStart.length + 1);
+    })
   });
 
 
@@ -163,9 +168,11 @@ describe('adding multiple rows', () => {
     const dom = render(<App />);
     const tableRowsAtStart = tableRowsIn(dom);
     createTableFromFixtureIn(dom, fixturesValid5Invalid1);
-    const tableRowsAtEnd = tableRowsIn(dom);
+    setTimeout(() => {
+        const tableRowsAtEnd = tableRowsIn(dom);
 
-    expect(tableRowsAtEnd.length).toEqual(tableRowsAtStart.length + 5);
+        expect(tableRowsAtEnd.length).toEqual(tableRowsAtStart.length + 5);
+    })
   })
 
 
@@ -187,25 +194,35 @@ describe('adding multiple rows', () => {
   it('should not show the no result message', () => {
     const dom = render(<App />);
     createTableFromFixtureIn(dom, fixturesValid5Invalid1);
-    const noResult = queryByTestId(dom.container, 'no-result');
-    if (noResult) {
-      // in case the item is found display should be none
-      const display = noResult.style.getPropertyValue('display');
-      expect(display).toEqual('none');
-    } else {
-      expect(noResult).toBe(null);
-    }
+
+    setTimeout(() => {
+        const noResult = queryByTestId(dom.container, 'no-result');
+        if (noResult) {
+            // in case the item is found display should be none
+            const display = noResult.style.getPropertyValue('display');
+            expect(display).toEqual('none');
+        } else {
+            expect(noResult).toBe(null);
+        }
+    })
   });
 
 
   describe('filtering results', () => {
     it('should not filter before 2 keys', () => {
       const dom = render(<App />);
-      createTableFromFixtureIn(dom, fixturesValid5Invalid1);
-      const tableRowsAtStart = tableRowsIn(dom);
-      setSearchQueryIn(dom, 'A');
-      const tableRowsAtEnd = tableRowsIn(dom);
-      expect(tableRowsAtEnd.length).toEqual(tableRowsAtStart.length);
+      let tableRowsAtStart
+
+      setTimeout(() => {
+          createTableFromFixtureIn(dom, fixturesValid5Invalid1);
+          tableRowsAtStart = tableRowsIn(dom);
+          setSearchQueryIn(dom, 'A');
+      })
+
+      setTimeout(() => {
+          const tableRowsAtEnd = tableRowsIn(dom);
+          expect(tableRowsAtEnd.length).toEqual(tableRowsAtStart.length);
+      })
     });
 
 
@@ -213,16 +230,19 @@ describe('adding multiple rows', () => {
       const dom = render(<App />);
       const tableRowsAtStart = tableRowsIn(dom);
       createTableFromFixtureIn(dom, fixturesValid5Invalid1);
-      setSearchQueryIn(dom, 'Alpha');
-      const tableRowsAtEnd = tableRowsIn(dom);
-      const dataRows = getDataRows(tableRowsAtEnd, tableRowsAtStart);
 
-      expect(dataRows.length).toEqual(1);
-      for (let i = 0; i < dataRows.length; i++) {
-        const row = dataRows[i];
-        const entry = queryByText(row, 'Alpha', { exact: false });
-        expect(entry).not.toBe(null);
-      }
+      setTimeout(() => {
+          setSearchQueryIn(dom, 'Alpha');
+          const tableRowsAtEnd = tableRowsIn(dom);
+          const dataRows = getDataRows(tableRowsAtEnd, tableRowsAtStart);
+
+          expect(dataRows.length).toEqual(1);
+          for (let i = 0; i < dataRows.length; i++) {
+              const row = dataRows[i];
+              const entry = queryByText(row, 'Alpha', { exact: false });
+              expect(entry).not.toBe(null);
+          }
+      })
     });
 
     it('should show new entries when added which pass the filter', () => {
@@ -231,38 +251,43 @@ describe('adding multiple rows', () => {
       const dom = render(<App />);
       const tableRowsAtStart = tableRowsIn(dom);
       createTableFromFixtureIn(dom, fixturesValid5Invalid1);
-      setSearchQueryIn(dom, 'Alpha');
-      createTableFromFixtureIn(dom, [newFixture]);
+      setTimeout(() => setSearchQueryIn(dom, 'Alpha'));
+      setTimeout(() => createTableFromFixtureIn(dom, [newFixture]));
 
-      const tableRowsAtEnd = tableRowsIn(dom);
-      const dataRows = getDataRows(tableRowsAtEnd, tableRowsAtStart);
+      setTimeout(() => {
+          const tableRowsAtEnd = tableRowsIn(dom);
+          const dataRows = getDataRows(tableRowsAtEnd, tableRowsAtStart);
 
-      expect(dataRows.length).toEqual(2);
+          expect(dataRows.length).toEqual(2);
 
-      const alphaman = queryByText(dataRows[0], 'Alphaman', { exact: false });
-      expect(alphaman).not.toBe(null);
+          const alphaman = queryByText(dataRows[0], 'Alphaman', { exact: false });
+          expect(alphaman).not.toBe(null);
 
-      const alpha = queryByText(dataRows[0], 'Alpha', { exact: false });
-      expect(alpha).not.toBe(null);
+          const alpha = queryByText(dataRows[0], 'Alpha', { exact: false });
+          expect(alpha).not.toBe(null);
+      })
     });
 
     it('should show no results message when filtered result empty', () => {
       const dom = render(<App />);
       const tableRowsAtStart = tableRowsIn(dom);
       createTableFromFixtureIn(dom, fixturesValid5Invalid1);
-      setSearchQueryIn(dom, 'hackerrank');
-      const tableRowsAtEnd = tableRowsIn(dom);
-      const dataRows = getDataRows(tableRowsAtEnd, tableRowsAtStart);
-      expect(dataRows.length).toEqual(0);
+      setTimeout(() => setSearchQueryIn(dom, 'hackerrank'));
 
-      const noResult = getByTestId(dom.container, 'no-result');
-      if (noResult) {
-        // in case the item is found display should be none
-        const display = noResult.style.getPropertyValue('display');
-        expect(display).toEqual('');
-      } else {
-        expect(noResult).not.toBe(null);
-      }
+      setTimeout(() => {
+          const tableRowsAtEnd = tableRowsIn(dom);
+          const dataRows = getDataRows(tableRowsAtEnd, tableRowsAtStart);
+          expect(dataRows.length).toEqual(0);
+
+          const noResult = getByTestId(dom.container, 'no-result');
+          if (noResult) {
+              // in case the item is found display should be none
+              const display = noResult.style.getPropertyValue('display');
+              expect(display).toEqual('');
+          } else {
+              expect(noResult).not.toBe(null);
+          }
+      })
     });
   });
 
@@ -272,20 +297,23 @@ describe('adding multiple rows', () => {
     const tableRowsAtStart = tableRowsIn(dom);
     // create orignal
     createTableFromFixtureIn(dom, fixturesValid5Invalid1);
-    createTableFromFixtureIn(dom, [{ name: 'Alpha', ratings: '7', duration: '2.4h' }])
-    const tableRowsAtEnd = tableRowsIn(dom);
+    setTimeout(() => createTableFromFixtureIn(dom, [{ name: 'Alpha', ratings: '7', duration: '2.4h' }]))
 
-    expect(tableRowsAtEnd.length).toEqual(tableRowsAtStart.length + 5);
+    setTimeout(() => {
+        const tableRowsAtEnd = tableRowsIn(dom);
 
-    const dataRows = getDataRows(tableRowsAtEnd, tableRowsAtStart);
-    for (let i = 0; i < dataRows.length; i++) {
-      const row = dataRows[i];
-      const entry = queryByText(row, 'Alpha', { exact: false });
-      if (entry) {
-        const parent = entry.parentNode;
-        getByText(parent, '7', { exact: false });
-        getByText(parent, '2.4h', { exact: false });
-      }
-    }
+        expect(tableRowsAtEnd.length).toEqual(tableRowsAtStart.length + 5);
+
+        const dataRows = getDataRows(tableRowsAtEnd, tableRowsAtStart);
+        for (let i = 0; i < dataRows.length; i++) {
+            const row = dataRows[i];
+            const entry = queryByText(row, 'Alpha', { exact: false });
+            if (entry) {
+                const parent = entry.parentNode;
+                getByText(parent, '7', { exact: false });
+                getByText(parent, '2.4h', { exact: false });
+            }
+        }
+    })
   });
 });
