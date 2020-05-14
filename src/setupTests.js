@@ -4,6 +4,8 @@ import 'jest-dom/extend-expect'
 // this is basically: afterEach(cleanup)
 import 'react-testing-library/cleanup-after-each'
 
+import 'mutationobserver-shim'
+
 
 // Supress the js dom messages
 // More info: https://github.com/facebook/jest/pull/5267
