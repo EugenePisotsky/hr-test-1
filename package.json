@@ -30,6 +30,12 @@
     "test:ci": "npm install; cross-env CI=true TEST_REPORT_FILENAME=./unit.xml react-scripts test --verbose --env=jsdom --testResultsProcessor jest-junit-reporter",
     "eject": "react-scripts eject"
   },
+  "prettier": {
+    "trailingComma": "es5",
+    "tabWidth": 4,
+    "semi": false,
+    "singleQuote": true
+  },
   "eslintConfig": {
     "extends": "react-app"
   },
@@ -40,6 +46,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "mutationobserver-shim": "^0.3.5"
+    "mutationobserver-shim": "^0.3.5",
+    "prettier": "2.0.5"
   }
 }
