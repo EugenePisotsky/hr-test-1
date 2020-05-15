@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx'
+import { action, computed, observable } from "mobx";
 
 export interface MovieModel {
     name: string
@@ -33,8 +33,26 @@ export const sortMovies = (movies: MovieModel[]) => {
 
 export class MoviesStore {
     @observable movies: MovieModel[] = []
-    @observable searchResults: MovieModel[] = []
-    @observable searchMode = false
+    @observable query = ''
+
+    get isSearchMode() {
+      return this.query.length > 1
+    }
+
+    @computed
+    get searchResults() {
+      if (!this.isSearchMode) {
+        return this.movies
+      }
+
+      return this.movies
+        .filter(item => item.name.toLowerCase().includes(this.query.toLowerCase()))
+    }
+
+    @computed
+    get sortedMovies() {
+      return sortMovies(this.isSearchMode ? this.searchResults : this.movies)
+    }
 
     @action
     addMovie(movie: MovieModel) {
@@ -58,15 +76,6 @@ export class MoviesStore {
 
     @action
     search(query: string) {
-        if (query.length < 2) {
-            this.searchMode = false
-            this.searchResults = []
-            return
-        }
-
-        this.searchMode = true
-        this.searchResults = this.movies.filter((item) =>
-            item.name.toLowerCase().includes(query.toLowerCase())
-        )
+        this.query = query
     }
 }

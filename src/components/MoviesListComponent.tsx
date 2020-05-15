@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useStores } from '../hooks/useStores'
-import { MovieModel, sortMovies } from '../stores/MoviesStore'
+import { MovieModel } from '../stores/MoviesStore'
 import { observer } from 'mobx-react'
 
 export function MovieRow({ movie }: { movie: MovieModel }) {
@@ -15,9 +15,7 @@ export function MovieRow({ movie }: { movie: MovieModel }) {
 
 export const MoviesListComponent = observer(() => {
     const { moviesStore } = useStores()
-    const { searchMode, searchResults, movies } = moviesStore
-
-    const sortedMovies = sortMovies(searchMode ? searchResults : movies)
+    const { sortedMovies } = moviesStore
 
     return (
         <>
@@ -40,7 +38,7 @@ export const MoviesListComponent = observer(() => {
                 )}
             </table>
 
-            {!searchResults.length && (
+            {!sortedMovies.length && (
                 <div id={'no-result'}>No Results Found</div>
             )}
         </>
